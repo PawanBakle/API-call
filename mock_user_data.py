@@ -146,16 +146,22 @@ while True:
         print(f'{mesg}')
         break
     else:
+        # assistant's message (which contains the tool_calls request)
+        messages.append({
+            "role": "assistant",
+            "content": response.choices[0].message.content,
+            "tool_calls": response.choices[0].message.tool_calls
+        })
         # print(f'{mesg} message sent by AI')
         for each_tool in tool:
             print(f' each tool sent \n {each_tool}')
             # what groq asked match with what functions/API is present in backend
             if each_tool.function.name == 'get_user_profile':
                 
-                locate = json.loads(each_tool.function.arguments)
-                location = locate['user_id']
+                user_data = json.loads(each_tool.function.arguments)
+                user_info = user_data['user_id']
                 # unit = each_tool.function.arguments['unit']
-                result = get_user_profile(location)
+                result = get_user_profile(user_info)
                 result = json.dumps(result)
                 messaged = {
                             "role": "tool",
